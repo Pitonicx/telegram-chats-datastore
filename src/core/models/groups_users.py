@@ -1,11 +1,12 @@
-from typing import TYPE_CHECKING
-
-from sqlalchemy import Table, Column, ForeignKey, UniqueConstraint, Integer
+from sqlalchemy import (
+    Table,
+    Column,
+    ForeignKey,
+    UniqueConstraint,
+    Integer,
+)
 
 from .base import ChatBase
-
-if TYPE_CHECKING:
-    pass
 
 groups_users_table = Table(
     "groups_users",

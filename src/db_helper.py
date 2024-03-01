@@ -26,18 +26,16 @@ class DatabaseHelper:
         name: str,
         username: str = None,
     ) -> None:
-        async with self.session_factory as session:
+        async with self.session_factory.begin() as session:
             session.add(User(tg_id=tg_id, name=name, username=username))
-            session.commit()
 
     async def create_group(
         self,
         tg_id: int,
         name: str,
     ) -> None:
-        async with self.session_factory as session:
+        async with self.session_factory.begin() as session:
             session.add(Group(tg_id=tg_id, name=name))
-            session.commit()
 
     async def _get_chat(
         self,

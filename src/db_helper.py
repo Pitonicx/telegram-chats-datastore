@@ -26,16 +26,22 @@ class DatabaseHelper:
         name: str,
         username: str = None,
     ) -> None:
-        async with self.session_factory.begin() as session:
-            session.add(User(tg_id=tg_id, name=name, username=username))
+        if await self.get_user(tg_id) is None:
+            async with self.session_factory.begin() as session:
+                session.add(User(tg_id=tg_id, name=name, username=username))
+        else:
+            print(f"Was attempted to create existing user - id {tg_id}")
 
     async def create_group(
         self,
         tg_id: int,
         name: str,
     ) -> None:
-        async with self.session_factory.begin() as session:
-            session.add(Group(tg_id=tg_id, name=name))
+        if await self.get_user(tg_id) is None:
+            async with self.session_factory.begin() as session:
+                session.add(Group(tg_id=tg_id, name=name))
+        else:
+            print(f"Was attempted to create existing group - id {tg_id}")
 
     async def _get_chat(
         self,
@@ -43,18 +49,17 @@ class DatabaseHelper:
         tg_id: int | None = None,
         code_phrase: str | None = None,
     ) -> User | Group | None:
-        if tg_id:
-            chat = await self.session_factory().scalar(
-                select(chat_model).where(chat_model.tg_id == tg_id)
-            )
-        elif code_phrase:
-            chat = await self.session_factory().scalar(
-                select(chat_model).where(chat_model.code_phrase == code_phrase)
-            )
-        else:
-            raise ValueError("One of tg_id or code_phrase must not be None")
-
-        return chat
+        async with self.session_factory.begin() as session:
+            if tg_id:
+                return await session.scalar(
+                    select(chat_model).where(chat_model.tg_id == tg_id)
+                )
+            elif code_phrase:
+                return await session.scalar(
+                    select(chat_model).where(chat_model.code_phrase == code_phrase)
+                )
+            else:
+                raise ValueError("One of tg_id or code_phrase must not be None")
 
     async def get_user(
         self,

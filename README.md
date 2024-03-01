@@ -13,6 +13,7 @@ This package uses SQLAlchemy to store Telegram chats.
 
 - Add more columns (date of creation, link for groups, etc.)
 - Add to README information about config and mechanism of database
+- Add commentaries
 - Add logging
 - Create tests
 
